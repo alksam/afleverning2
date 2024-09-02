@@ -1,0 +1,62 @@
+content
+# Search Web and Read Wikipedia
+#!pip install wikipedia
+#!pip install googlesearch-python
+"import requests
+ import pandas as pd"
+"%%writefile readwiki.py
+ import wikipedia
+ from googlesearch import search
+ #  Read the main page
+ def readWiki(subject, lang, n):
+     result = []
+     wdict = {}
+     wikipedia.set_lang(lang)
+     
+     wsum = wikipedia.summary(subject, sentences=n)
+     
+     wpage = wikipedia.page(subject)   
+     wtext = wpage.content
+     whtml = wpage.html
+     wlinks = wpage.links[0:n]
+     
+     wdict = {'url': wpage.url, 'title':wpage.title, 'summary': wsum, 'links':wlinks, 'html':whtml }
+     
+     result.append(wdict)
+     result.append(wtext)
+     return result
+ 
+ # Read related pages that reference the main search
+ from googlesearch import search
+ def browseWeb(subject, lang, num): 
+     list = []
+     for i in search(subject, num_results=num, lang=lang, advanced=True):
+         list.append(i)
+     return list"
+## Test the Functions
+"import readwiki
+ from readwiki import readWiki, browseWeb"
+"import importlib 
+ importlib.reload(readwiki)"
+"# select the subject
+ #subject = 'Copenhagen Business Academy'
+ subject = ""Trump"""
+### Test Wikipedia Search
+# subject = pd.DataFrame(tab.name)
+"result = readWiki(subject, 'en', 5)"
+result[0]
+result[0]['url']
+result[0]['links']
+result[0]['summary']
+### Test Google Search
+"links = browseWeb(subject, 'en', 10)"
+len(links)
+links[0]
+"for num in range(len(links)):
+       print(f""{num}. {links[num].url}"")"
+## Store Search Results in DataFrame
+"df = pd.DataFrame(columns = ['url', 'title', 'description'])"
+"#add rows to df
+ for index in range(len(links)):
+     df.loc[len(df.index)] = [links[index].url, links[index].title, links[index].description ]"
+df
